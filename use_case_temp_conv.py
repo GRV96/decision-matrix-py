@@ -39,7 +39,7 @@ DEG_C = "C"
 DEG_F = "F"
 KELVIN = "K"
 
-input_scale = "F"
+input_scale = "K"
 output_scale = "K"
 
 input_scale_axis = [
@@ -53,12 +53,15 @@ output_scale_axis = [
 
 dm = DecisionMatrix(input_scale_axis, output_scale_axis)
 
+dm.set_action(lambda: perform_conversion(do_not_convert), 0, 0)
 dm.set_action(lambda: perform_conversion(convert_c_to_f), 0, 1)
 dm.set_action(lambda: perform_conversion(convert_c_to_k), 0, 2)
 dm.set_action(lambda: perform_conversion(convert_f_to_c), 1, 0)
+dm.set_action(lambda: perform_conversion(do_not_convert), 1, 1)
 dm.set_action(lambda: perform_conversion(convert_f_to_k), 1, 2)
 dm.set_action(lambda: perform_conversion(convert_k_to_c), 2, 0)
 dm.set_action(lambda: perform_conversion(convert_k_to_f), 2, 1)
+dm.set_action(lambda: perform_conversion(do_not_convert), 2, 2)
 
 dm.print_axis_values()
 dm.run()
