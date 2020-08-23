@@ -1,3 +1,4 @@
+from copy import deepcopy
 from loop_index.loop_index import LoopIndex
 
 class DecisionMatrix:
@@ -21,8 +22,7 @@ class DecisionMatrix:
         while axis_index.iterate():
             i = axis_index.get_value()
             axis_length = len(self._axes[i])
-            # Deep copies are created.
-            submatrix = [submatrix for x in range(axis_length)]
+            submatrix = [deepcopy(submatrix) for x in range(axis_length)]
 
         self._matrix = submatrix
 
@@ -70,9 +70,10 @@ class DecisionMatrix:
     def set_action(self, action, *coordinates):
         submatrix = self._matrix
 
-        index = LoopIndex(len(coordinates)-1)
-        while index.iterate():
-            i = index.get_value()
-            submatrix = submatrix[i]
+        coord_index = LoopIndex(len(coordinates)-1)
+        while coord_index.iterate():
+            i = coord_index.get_value()
+            coordinate = coordinates[i]
+            submatrix = submatrix[coordinate]
 
         submatrix[coordinates[self._axis_count-1]] = action
