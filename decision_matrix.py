@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from copy import deepcopy
 from loop_index.loop_index import LoopIndex
 
