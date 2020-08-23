@@ -29,7 +29,7 @@ class DecisionMatrix:
     def get_axis_count(self):
         return self._axis_count
 
-    def print_condition_axes(self):
+    def print_axis_values(self):
         axis_index = LoopIndex(self._axis_count)
         while axis_index.iterate():
             i = axis_index.get_value()
@@ -54,15 +54,11 @@ class DecisionMatrix:
         while index.iterate():
             i = index.get_value()
 
-            print("[" + str(axis) + "]" + "[" + str(i) + "]: "
-                  + str(self._axes[axis][i]()))
             if self._axes[axis][i]():
                 next_axis = axis + 1
                 subsub = submatrix[i]
-                print(subsub)
 
                 if callable(subsub):
-                    #print("Running action at [" + "][" + "]")
                     subsub()
                 elif subsub is not None and next_axis<self._axis_count:
                     self._run_submatrix(next_axis, subsub)

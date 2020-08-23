@@ -33,8 +33,8 @@ def convert_k_to_f():
     print("Converting K to °F")
     output_temp = input_temp * 9 / 5 - 459.67
 
-input_scale = "C"
-output_scale = "F"
+input_scale = "F"
+output_scale = "K"
 
 input_scale_axis = [
     lambda: input_scale == DEG_C,
@@ -54,7 +54,6 @@ dm.set_action(convert_f_to_k, 1, 2)
 dm.set_action(convert_k_to_c, 2, 0)
 dm.set_action(convert_k_to_f, 2, 1)
 
-print(dm._matrix)
-dm.print_condition_axes()
+dm.print_axis_values()
 dm.run()
 print(output_temp)
