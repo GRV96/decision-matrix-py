@@ -75,3 +75,20 @@ class DecisionMatrix:
             submatrix = submatrix[coordinate]
 
         submatrix[coordinates[self._axis_count-1]] = action
+
+    def set_all_actions(self, coord_action_dict):
+        self._set_all_actions_rec(self._matrix, [], coord_action_dict)
+
+    def _set_all_actions_rec(self, submatrix, submat_coord, coord_action_dict):
+        index = LoopIndex(len(submatrix))
+        while index.iterate():
+            i = index.get_value()
+            subsub = submatrix[i]
+            subsub_coord = submat_coord + [i]
+
+            if type(subsub) is list:
+                self._set_all_actions_rec(subsub, subsub_coord, coord_action_dict)
+            else:
+                action = coord_action_dict.get(tuple(subsub_coord))
+                if action is not None:
+                    submatrix[i] = action

@@ -7,7 +7,7 @@ class Player:
 
     def __init__(self):
         self._points = 0
-        self.revive()
+        self.revive() # Creates attribute _is_alive.
 
     def get_points(self):
         return self._points
@@ -53,23 +53,16 @@ player2_axis = (
 
 dm = DecisionMatrix(player0_axis, player1_axis, player2_axis)
 
-# All three players die.
-# No points are given.
-
-# Two players die.
-dm.set_action(lambda: give_points({0: 2}), 1, 0, 0)
-dm.set_action(lambda: give_points({1: 2}), 0, 1, 0)
-dm.set_action(lambda: give_points({2: 2}), 0, 0, 1)
-
-# One player dies.
-dm.set_action(lambda: give_points({1: 1, 2: 1}), 0, 1, 1)
-dm.set_action(lambda: give_points({0: 1, 2: 1}), 1, 0, 1)
-dm.set_action(lambda: give_points({0: 1, 1: 1}), 1, 1, 0)
-
-# No player dies.
-# No points are given.
+dm.set_all_actions({(1, 0, 0): lambda: give_points({0: 2}), # Players 1 and 2 die.
+                    (0, 1, 0): lambda: give_points({1: 2}), # Players 0 and 2 die.
+                    (0, 0, 1): lambda: give_points({2: 2}), # Players 0 and 1 die.
+                    (0, 1, 1): lambda: give_points({1: 1, 2: 1}), # Player 0 dies.
+                    (1, 0, 1): lambda: give_points({0: 1, 2: 1}), # Player 1 dies.
+                    (1, 1, 0): lambda: give_points({0: 1, 1: 1})}) #Player 2 dies.
+# No points are awarded when all players or none die.
 
 def end_round():
+    dm.print_axis_values()
     dm.run()
     print_scores()
     revive_the_dead()
