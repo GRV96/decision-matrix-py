@@ -54,7 +54,7 @@ player2_axis = (
 dm = DecisionMatrix(player0_axis, player1_axis, player2_axis)
 
 # All three players die.
-dm.set_action(lambda: give_points({0: 0, 1: 0, 2: 0}), 1, 1, 1)
+# No points are given.
 
 # Two players die.
 dm.set_action(lambda: give_points({0: 2}), 1, 0, 0)
@@ -67,7 +67,7 @@ dm.set_action(lambda: give_points({0: 1, 2: 1}), 1, 0, 1)
 dm.set_action(lambda: give_points({0: 1, 1: 1}), 1, 1, 0)
 
 # No player dies.
-dm.set_action(lambda: give_points({0: 0, 1: 0, 2: 0}), 0, 0, 0)
+# No points are given.
 
 def end_round():
     dm.run()
