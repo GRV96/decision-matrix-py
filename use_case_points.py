@@ -37,9 +37,9 @@ def print_scores():
         i = player_index.get_value()
         print("Player " + str(i) + ": " + str(players[i].get_points()))
 
-# Player 1 wins the round by killing players 0 and 2.
-players[0].kill()
-players[2].kill()
+def revive_the_dead():
+    for player in players:
+        player.revive()
 
 player0_axis = (
     lambda: not players[0].is_alive(),
@@ -53,10 +53,42 @@ player2_axis = (
 
 dm = DecisionMatrix(player0_axis, player1_axis, player2_axis)
 
-dm.set_action(lambda: give_points({0: 1}), 1, 0, 0)
-dm.set_action(lambda: give_points({1: 1}), 0, 1, 0)
-dm.set_action(lambda: give_points({2: 1}), 0, 0, 1)
+# All three players die.
+dm.set_action(lambda: give_points({0: 0, 1: 0, 2: 0}), 1, 1, 1)
 
-dm.run()
+# Two players die.
+dm.set_action(lambda: give_points({0: 2}), 1, 0, 0)
+dm.set_action(lambda: give_points({1: 2}), 0, 1, 0)
+dm.set_action(lambda: give_points({2: 2}), 0, 0, 1)
 
-print_scores()
+# One player dies.
+dm.set_action(lambda: give_points({1: 1, 2: 1}), 0, 1, 1)
+dm.set_action(lambda: give_points({0: 1, 2: 1}), 1, 0, 1)
+dm.set_action(lambda: give_points({0: 1, 1: 1}), 1, 1, 0)
+
+# No player dies.
+dm.set_action(lambda: give_points({0: 0, 1: 0, 2: 0}), 0, 0, 0)
+
+def end_round():
+    dm.run()
+    print_scores()
+    revive_the_dead()
+    print()
+
+# Players 0 and 2 die.
+players[0].kill()
+players[2].kill()
+end_round()
+
+# Player 1 dies.
+players[1].kill()
+end_round()
+
+# No player dies.
+end_round()
+
+# All players die.
+players[0].kill()
+players[1].kill()
+players[2].kill()
+end_round()
