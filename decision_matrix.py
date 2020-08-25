@@ -70,7 +70,8 @@ class DecisionMatrix:
                     subsub()
                     action_performed = True
                 elif subsub is not None and next_axis<self._axis_count:
-                    action_performed = self._run_submatrix(next_axis, subsub)
+                    next_iter_value = self._run_submatrix(next_axis, subsub)
+                    action_performed = action_performed or next_iter_value
 
         return action_performed
 
