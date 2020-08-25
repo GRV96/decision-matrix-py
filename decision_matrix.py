@@ -104,7 +104,7 @@ class DecisionMatrix:
                     submatrix[i] = action
 
     def set_default_action(self, action):
-        if callable(action):
+        if action is None or callable(action):
             self._default_action = action
             return True
         else:

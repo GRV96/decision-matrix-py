@@ -52,7 +52,6 @@ output_scale_axis = [
     lambda: output_scale.upper() == KELVIN]
 
 dm = DecisionMatrix(input_scale_axis, output_scale_axis)
-
 dm.set_all_actions({(0, 0): lambda: perform_conversion(do_not_convert),
                     (0, 1): lambda: perform_conversion(convert_c_to_f),
                     (0, 2): lambda: perform_conversion(convert_c_to_k),
@@ -62,6 +61,5 @@ dm.set_all_actions({(0, 0): lambda: perform_conversion(do_not_convert),
                     (2, 0): lambda: perform_conversion(convert_k_to_c),
                     (2, 1): lambda: perform_conversion(convert_k_to_f),
                     (2, 2): lambda: perform_conversion(do_not_convert)})
-
 dm.print_axis_values()
 dm.run()
