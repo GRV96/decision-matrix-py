@@ -8,6 +8,7 @@ class DecisionMatrix:
     def __init__(self, *condition_axes):
         self._build_axes(condition_axes)
         self._build_matrix()
+        self.set_default_action(None)
 
     def _build_axes(self, condition_axes):
         axis_list = list()
@@ -49,9 +50,14 @@ class DecisionMatrix:
             print("Axis " + str(i) + ": " + str(axis_values))
 
     def run(self):
-        self._run_submatrix(0, self._matrix)
+        action_performed = self._run_submatrix(0, self._matrix)
+
+        if not action_performed and self._default_action is not None:
+            self._default_action()
 
     def _run_submatrix(self, axis, submatrix):
+        action_performed = False
+
         index = LoopIndex(len(submatrix))
         while index.iterate():
             i = index.get_value()
@@ -62,8 +68,11 @@ class DecisionMatrix:
 
                 if callable(subsub):
                     subsub()
+                    action_performed = True
                 elif subsub is not None and next_axis<self._axis_count:
-                    self._run_submatrix(next_axis, subsub)
+                    action_performed = self._run_submatrix(next_axis, subsub)
+
+        return action_performed
 
     def set_action(self, action, *coordinates):
         submatrix = self._matrix
@@ -87,8 +96,16 @@ class DecisionMatrix:
             subsub_coord = submat_coord + [i]
 
             if type(subsub) is list:
-                self._set_all_actions_rec(subsub, subsub_coord, coord_action_dict)
+                self._set_all_actions_rec(subsub, subsub_coord,
+                                          coord_action_dict)
             else:
                 action = coord_action_dict.get(tuple(subsub_coord))
                 if action is not None:
                     submatrix[i] = action
+
+    def set_default_action(self, action):
+        if callable(action):
+            self._default_action = action
+            return True
+        else:
+            return False

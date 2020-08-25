@@ -31,8 +31,12 @@ exponent_axis = [lambda: exponent == 24,
                  lambda: exponent == -24]
 
 def print_prefix(prefix, symbol):
-    print("The SI prefix for 10^{} is \"{}\" ({})."
-          .format(exponent, prefix, symbol))
+    if prefix is None or symbol is None:
+        print("The SI does not have a prefix for 10^{}."
+              .format(exponent))
+    else:
+        print("The SI prefix for 10^{} is \"{}\" ({})."
+              .format(exponent, prefix, symbol))
 
 dm = DecisionMatrix(exponent_axis)
 dm.set_all_actions({(0,): lambda: print_prefix("yotta", "Y"),
@@ -55,6 +59,7 @@ dm.set_all_actions({(0,): lambda: print_prefix("yotta", "Y"),
                     (17,): lambda: print_prefix("atto", "a"),
                     (18,): lambda: print_prefix("zepto", "z"),
                     (19,): lambda: print_prefix("yocto", "y")})
+dm.set_default_action(lambda: print_prefix(None, None))
 dm.print_axis_values()
 dm.run()
 
