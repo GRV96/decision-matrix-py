@@ -7,15 +7,11 @@ class DecisionMatrix:
 
     def __init__(self, *condition_axes):
         self._build_axes(condition_axes)
+        self._check_presence_of_axes()
         self._build_matrix()
         self.set_default_action(None)
 
     def _build_axes(self, condition_axes):
-        self._axis_count = len(condition_axes)
-        if self._axis_count <= 0:
-            raise ValueError("DecisionMatrix needs at least one axis."
-                             + " It was not given any.")
-
         axis_list = list()
 
         for ca in condition_axes:
@@ -23,6 +19,7 @@ class DecisionMatrix:
             axis_list.append(ca_tuple)
 
         self._axes = tuple(axis_list)
+        self._axis_count = len(self._axes)
 
     def _build_matrix(self):
         submatrix = None
@@ -34,6 +31,11 @@ class DecisionMatrix:
             submatrix = [deepcopy(submatrix) for x in range(axis_length)]
 
         self._matrix = submatrix
+
+    def _check_presence_of_axes(self):
+        if self._axis_count <= 0:
+            raise ValueError("DecisionMatrix needs at least one axis."
+                             + " It was not given any.")
 
     def get_axis_count(self):
         return self._axis_count
