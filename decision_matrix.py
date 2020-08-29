@@ -24,13 +24,16 @@ class DecisionMatrix:
         axis_index = LoopIndex(0, -1, self._axis_count-1)
         while axis_index.iterate():
             i = axis_index.get_value()
-            axis_length = len(self._axes[i])
+            axis_length = self._get_axis_length(i)
             submatrix = [deepcopy(submatrix) for x in range(axis_length)]
 
         self._matrix = submatrix
 
     def get_axis_count(self):
         return self._axis_count
+
+    def _get_axis_length(self, axis):
+        return len(self._axes[axis])
 
     def print_axis_values(self):
         axis_index = LoopIndex(self._axis_count)
@@ -69,7 +72,7 @@ class DecisionMatrix:
                 if callable(subsub):
                     subsub()
                     action_performed = True
-                elif subsub is not None and next_axis<self._axis_count:
+                elif subsub is not None and next_axis < self._axis_count:
                     next_iter_value = self._run_submatrix(next_axis, subsub)
                     action_performed = action_performed or next_iter_value
 
