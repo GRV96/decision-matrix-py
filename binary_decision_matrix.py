@@ -9,6 +9,11 @@ class BinaryDecisionMatrix(DecisionMatrix):
     def __init__(self, conditions):
         self._conditions = tuple(conditions)
         self._axis_count = len(self._conditions)
+
+        if self._axis_count <= 0:
+            raise ValueError("DecisionMatrix needs at least one axis."
+                             + " It was not given any.")
+
         self._build_matrix()
         self.set_default_action(None)
 

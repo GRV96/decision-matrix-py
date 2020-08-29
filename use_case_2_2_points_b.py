@@ -10,7 +10,6 @@ player_alive_conditions = (pc.get_player(0).is_alive,
                            pc.get_player(2).is_alive)
 
 dm = BinaryDecisionMatrix(player_alive_conditions)
-
 dm.set_all_actions({(1, 0, 0): lambda: pc.give_points({0: 2}), # Players 1 and 2 die.
                     (0, 1, 0): lambda: pc.give_points({1: 2}), # Players 0 and 2 die.
                     (0, 0, 1): lambda: pc.give_points({2: 2}), # Players 0 and 1 die.
