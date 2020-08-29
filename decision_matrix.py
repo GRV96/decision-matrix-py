@@ -103,9 +103,7 @@ class DecisionMatrix:
                 self._set_all_actions_rec(subsub, subsub_coord,
                                           coord_action_dict)
             else:
-                action = coord_action_dict.get(tuple(subsub_coord))
-                if action is not None:
-                    submatrix[i] = action
+                submatrix[i] = coord_action_dict.get(tuple(subsub_coord))
 
     def set_default_action(self, action):
         if action is None or callable(action):
