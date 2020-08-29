@@ -27,7 +27,7 @@ class PlayerContainer:
 
     def __init__(self, player_num):
         self._players = tuple(Player() for x in range(player_num))
-        self._player_count = len(self._players)
+        self._player_count = player_num
 
     def get_player(self, player_index):
         return self._players[player_index]
