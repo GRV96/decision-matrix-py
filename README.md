@@ -26,8 +26,8 @@ A DecisonMatrix must have at least one axis.
 
 Coordinates in the matrix represent a set of parameter values. In other words,
 coordinates are indices identifying conditions on their axis. They can therefore
-be used to determine whether the parameters have certain values. Coordinates are
-true if all the conditions to which they correspond are true.
+be used to determine whether the parameters have certain values. A coordinate is
+true if the condition to which it corresponds is true.
 
 DecisonMatrix contains actions at definite coordinates. When the matrix is run,
 the actions whose coordinates are true are invoked. After DecisonMatrix is
@@ -41,5 +41,5 @@ whose parameters are boolean. Instead of axes, its constructor takes individual
 conditions. BinaryDecisionMatrix does not work with axes actually, but simulates
 axes of length 2 using these conditions. If a condition is true, coordinates 0
 and 1 of the corresponding axis are false and true respectively. If a condition
-is false, it is the opposite. Thus, the coordinates of a BinaryDecisionMatrix
+is false, 0 is true, and 1 is false. Thus, the coordinates of a BinaryDecisionMatrix
 can only be 0 or 1 and represent the boolean value of their simulated axis.

@@ -6,9 +6,9 @@ from loop_index.loop_index import LoopIndex
 class DecisionMatrix:
     """
     This class is a matrix containing actions at given coordinates. Its axes
-    are tuplists of conditions: callable objects returning boolean values. When
-    an instance is run, the actions whose coordinates match true conditions
-    are performed.
+    are tuplists of conditions (callable objects returning boolean values). A
+    coordinate is true if the condition to which it corresponds is true.
+    When an instance is run, the actions whose coordinates are true are invoked.
     """
 
     def __init__(self, *condition_axes):
@@ -88,8 +88,8 @@ class DecisionMatrix:
     def run(self):
         """
         Browses the matrix checking the truth value of every coordinate set. If
-        the coordinates are true, the associated action is performed. If no action
-        is performed after the browsing and a default action has been specified,
+        the coordinates are true, the associated action is invoked. If no action
+        is invoked after the browsing and a default action has been specified,
         that action is performed.
         """
         action_performed = self._run_submatrix(0, self._matrix)
@@ -143,7 +143,8 @@ class DecisionMatrix:
 
         Args:
             coord_action_dict (dictionary): contains actions (values) paired with
-            the coordinates (keys) where they must be stored.
+            their coordinates (keys) where they must be stored. Coordinates must
+            be represented by tuples.
         """
         self._set_all_actions_rec(self._matrix, [], coord_action_dict)
 
