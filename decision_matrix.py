@@ -227,11 +227,11 @@ class DecisionMatrix:
             action: a callable object. Its return value will not be recorded
                 or used.
 
-        Returns:
-            bool: True if action was set as the default action, False otherwise.
+        Raises:
+            ValueError: if action is not None and is not a callable object.
         """
         if action is None or callable(action):
             self._default_action = action
-            return True
         else:
-            return False
+            raise ValueError(
+                "The default action must be None or a callable object.")
