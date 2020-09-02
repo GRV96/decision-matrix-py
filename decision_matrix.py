@@ -47,7 +47,7 @@ class DecisionMatrix:
         self._matrix = submatrix
 
     def _check_presence_of_axes(self):
-        if self._axis_count <= 0:
+        if self._axis_count < 1:
             raise ValueError("DecisionMatrix needs at least one axis."
                              + " It was not given any.")
 
