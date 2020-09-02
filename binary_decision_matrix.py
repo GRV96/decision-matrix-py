@@ -6,7 +6,7 @@ from loop_index.loop_index import LoopIndex
 
 class BinaryDecisionMatrix(DecisionMatrix):
     """
-    This subclass of DecisionMatrix is designed for situations where all
+    This subclass of DecisionMatrix is designed for situations whose all
     parameters are boolean. Each axis is simulated with a condition and has a
     length of 2. If a condition is true, coordinates 0 and 1 of the corresponding
     axis are false and true respectively. If a condition is false, 0 is true,
