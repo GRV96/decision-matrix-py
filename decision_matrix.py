@@ -47,9 +47,21 @@ class DecisionMatrix:
         self._matrix = submatrix
 
     def _check_presence_of_axes(self):
-        if self._axis_count <= 0:
+        if self._axis_count < 1:
             raise ValueError("DecisionMatrix needs at least one axis."
                              + " It was not given any.")
+
+    def _check_coordinates(self, coordinates):
+        if not self.has_coordinates(coordinates):
+            self._raise_coord_value_error(coordinates)
+
+    def _get_all_axis_lengths(self):
+        lengths = list()
+        axis_index = LoopIndex(self._axis_count)
+        while axis_index.iterate():
+            i = axis_index.get_value()
+            lengths.append(self._get_axis_length(i))
+        return tuple(lengths)
 
     def get_axis_count(self):
         """
@@ -62,6 +74,30 @@ class DecisionMatrix:
 
     def _get_axis_length(self, axis):
         return len(self._axes[axis])
+
+    def has_coordinates(self, coordinates):
+        """
+        Determines whether the given coordinates exist in this matrix.
+
+        Args:
+            coordinates (tuplist): must be integral numbers.
+
+        Returns:
+            bool: True if the coordinates exist in this matrix, False otherwise.
+        """
+        coord_length = len(coordinates)
+
+        if coord_length != self._axis_count:
+            return False
+
+        coord_index = LoopIndex(coord_length)
+        while coord_index.iterate():
+            i = coord_index.get_value()
+            coordinate = coordinates[i]
+            if coordinate < 0 or coordinate >= self._get_axis_length(i):
+                return False
+
+        return True
 
     def print_axis_values(self):
         """
@@ -84,6 +120,12 @@ class DecisionMatrix:
                     axis_values.append(0)
 
             print("Axis " + str(i) + ": " + str(axis_values))
+
+    def _raise_coord_value_error(self, coordinates):
+        raise ValueError("Coordinates " + str(coordinates)
+                         + " are not valid. This matrix has "
+                         + str(self._axis_count) + " axes whose lengths are "
+                         + str(self._get_all_axis_lengths()) + ".")
 
     def run(self):
         """
@@ -126,7 +168,13 @@ class DecisionMatrix:
                 or used.
             *coordinates: integral values indicating where the action will be
                 stored in the matrix.
+
+        Raises:
+            ValueError: if the coordinates are invalid, i.e. has_coordinates
+                returns False.
         """
+        self._check_coordinates(coordinates)
+
         submatrix = self._matrix
 
         coord_index = LoopIndex(len(coordinates)-1)
@@ -145,7 +193,14 @@ class DecisionMatrix:
             coord_action_dict (dictionary): contains actions (values) paired with
             their coordinates (keys) where they must be stored. Coordinates must
             be represented by tuples.
+
+        Raises:
+            ValueError: if a key in coord_action_dict is invalid, i.e.
+                has_coordinates returns False.
         """
+        for coordinates in coord_action_dict:
+            self._check_coordinates(coordinates)
+
         self._set_all_actions_rec(self._matrix, [], coord_action_dict)
 
     def _set_all_actions_rec(self, submatrix, submat_coord, coord_action_dict):
@@ -172,11 +227,11 @@ class DecisionMatrix:
             action: a callable object. Its return value will not be recorded
                 or used.
 
-        Returns:
-            bool: True if action was set as the default action, False otherwise.
+        Raises:
+            ValueError: if action is not None and is not a callable object.
         """
         if action is None or callable(action):
             self._default_action = action
-            return True
         else:
-            return False
+            raise ValueError(
+                "The default action must be None or a callable object.")
