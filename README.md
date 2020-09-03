@@ -33,8 +33,7 @@ DecisionMatrix contains actions at definite coordinates. When the matrix is run,
 the actions whose coordinates are true are invoked. After DecisionMatrix is
 instantiated, the actions can be set all together with method set_all_actions
 or individually with method set_action. The former takes a dictionary associating
-coordinates to an action and erases all previously set actions. The latter takes
-an action and its coordinates.
+coordinates to actions; the latter takes an action and its coordinates.
 
 BinaryDecisionMatrix is a subclass of DecisionMatrix. It is designed for situations
 whose parameters are boolean. Instead of axes, its constructor takes individual

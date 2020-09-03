@@ -22,7 +22,7 @@ class DecisionMatrix:
         """
         self._build_axes(condition_axes)
         self._check_presence_of_axes()
-        self._build_matrix()
+        self._matrix = dict()
         self.set_default_action(None)
 
     def _build_axes(self, condition_axes):
@@ -35,17 +35,6 @@ class DecisionMatrix:
         self._axes = tuple(axis_list)
         self._axis_count = len(self._axes)
 
-    def _build_matrix(self):
-        submatrix = None
-
-        axis_index = LoopIndex(0, -1, self._axis_count-1)
-        while axis_index.iterate():
-            i = axis_index.get_value()
-            axis_length = self._get_axis_length(i)
-            submatrix = [deepcopy(submatrix) for x in range(axis_length)]
-
-        self._matrix = submatrix
-
     def _check_presence_of_axes(self):
         if self._axis_count < 1:
             raise ValueError("DecisionMatrix needs at least one axis."
@@ -54,6 +43,27 @@ class DecisionMatrix:
     def _check_coordinates(self, coordinates):
         if not self.has_coordinates(coordinates):
             self._raise_coord_value_error(coordinates)
+
+    def clear_actions(self):
+        """
+        Deletes all actions stored in this matrix except the default action.
+        In order to delete it, call set_default_action(None).
+        """
+        self._matrix.clear()
+
+    def _coordinate_is_true(self, axis, coordinate):
+        return self._axes[axis][coordinate]()
+
+    def _coordinates_are_true(self, coordinates):
+        index = LoopIndex(self._axis_count)
+        while index.iterate():
+            i = index.get_value()
+            coordinate = coordinates[i]
+
+            if not self._coordinate_is_true(i, coordinate):
+                return False
+
+        return True
 
     def _get_all_axis_lengths(self):
         lengths = list()
@@ -134,94 +144,71 @@ class DecisionMatrix:
         is invoked after the browsing and a default action has been specified,
         that action is performed.
         """
-        action_performed = self._run_submatrix(0, self._matrix)
+        action_performed = False
+
+        for coordinates, action in self._matrix.items():
+            if self._coordinates_are_true(coordinates):
+                action()
+                action_performed = True
 
         if not action_performed and self._default_action is not None:
             self._default_action()
 
-    def _run_submatrix(self, axis, submatrix):
-        action_performed = False
-
-        index = LoopIndex(len(submatrix))
-        while index.iterate():
-            i = index.get_value()
-
-            if self._axes[axis][i]():
-                next_axis = axis + 1
-                subsub = submatrix[i]
-
-                if callable(subsub):
-                    subsub()
-                    action_performed = True
-                elif subsub is not None and next_axis < self._axis_count:
-                    next_iter_value = self._run_submatrix(next_axis, subsub)
-                    action_performed = action_performed or next_iter_value
-
-        return action_performed
-
-    def set_action(self, action, *coordinates):
+    def set_action(self, coordinates, action):
         """
         Stores an action in the matrix at the specified coordinates.
 
         Args:
+            coordinates (tuplist): integral values indicating where the action
+                will be stored in the matrix.
             action: a callable object. Its return value will not be recorded
                 or used.
-            *coordinates: integral values indicating where the action will be
-                stored in the matrix.
 
         Raises:
-            ValueError: if the coordinates are invalid, i.e. has_coordinates
-                returns False.
+            ValueError: if action is not callable or the coordinates are invalid,
+                i.e. has_coordinates returns False.
         """
+        if type(coordinates) is not tuple:
+            coordinates = tuple(coordinates)
+
         self._check_coordinates(coordinates)
 
-        submatrix = self._matrix
+        if not callable(action):
+            raise ValueError("Argument action must be a callable object.")
 
-        coord_index = LoopIndex(len(coordinates)-1)
-        while coord_index.iterate():
-            i = coord_index.get_value()
-            coordinate = coordinates[i]
-            submatrix = submatrix[coordinate]
+        self._matrix[coordinates] = action
 
-        submatrix[coordinates[self._axis_count-1]] = action
-
-    def set_all_actions(self, coord_action_dict):
+    def set_all_actions(self, coord_action_dict, overwrite=True):
         """
-        Receives actions in a dictionary and stores them in the matrix.
+        Stores the actions from dictionary coord_action_dict in the matrix at
+        the coordinates with which they are paired. The actions currently stored
+        in this instance will remain if they are not overwritten with a new
+        action. To delete all the actions stored in this instance, use method
+        clear_actions.
 
         Args:
-            coord_action_dict (dictionary): contains actions (values) paired with
-            their coordinates (keys) where they must be stored. Coordinates must
-            be represented by tuples.
+            coord_action_dict (dictionary): contains actions (values) paired
+                with their coordinates (keys) where they must be stored.
+                Coordinates must be represented by tuples.
+            overwrite (bool, optional): if True, the actions in coord_action_dict
+                will overwrite the actions currently stored at their coordinates.
+                Defaults to True.
 
         Raises:
             ValueError: if a key in coord_action_dict is invalid, i.e.
-                has_coordinates returns False.
+                has_coordinates returns False or if a value in
+                coord_action_dict is not a callable object.
         """
-        for coordinates in coord_action_dict:
-            self._check_coordinates(coordinates)
-
-        self._set_all_actions_rec(self._matrix, [], coord_action_dict)
-
-    def _set_all_actions_rec(self, submatrix, submat_coord, coord_action_dict):
-        index = LoopIndex(len(submatrix))
-        while index.iterate():
-            i = index.get_value()
-            subsub = submatrix[i]
-            subsub_coord = submat_coord + [i]
-
-            if type(subsub) is list:
-                self._set_all_actions_rec(subsub, subsub_coord,
-                                          coord_action_dict)
-            else:
-                submatrix[i] = coord_action_dict.get(tuple(subsub_coord))
+        for coordinates, action in coord_action_dict.items():
+            if overwrite or self._matrix.get(coordinates) is None:
+                self.set_action(coordinates, action)
 
     def set_default_action(self, action):
         """
-        The specified action will be performed if all conditions are false. The
-        default action can be set to None if it is not wanted. On instantiation,
-        DecisionMatrix does not have a default action. The action will only be
-        set as default if it is None or callable.
+        The specified action will be performed when this instance is run if all
+        conditions are false. The default action can be set to None if it is not
+        wanted. On instantiation, DecisionMatrix does not have a default action.
+        The action will only be set as default if it is None or callable.
 
         Args:
             action: a callable object. Its return value will not be recorded
