@@ -205,10 +205,10 @@ class DecisionMatrix:
 
     def set_default_action(self, action):
         """
-        The specified action will be performed if all conditions are false. The
-        default action can be set to None if it is not wanted. On instantiation,
-        DecisionMatrix does not have a default action. The action will only be
-        set as default if it is None or callable.
+        The specified action will be performed when this instance is run if all
+        conditions are false. The default action can be set to None if it is not
+        wanted. On instantiation, DecisionMatrix does not have a default action.
+        The action will only be set as default if it is None or callable.
 
         Args:
             action: a callable object. Its return value will not be recorded
