@@ -24,8 +24,14 @@ class BinaryDecisionMatrix(DecisionMatrix):
         self._conditions = tuple(conditions)
         self._axis_count = len(self._conditions)
         self._check_presence_of_axes()
-        self._build_matrix()
+        self._matrix = dict()
         self.set_default_action(None)
+
+    def _coordinate_is_true(self, axis, coordinate):
+        if self._conditions[axis]():
+            return coordinate == 1
+        else:
+            return coordinate == 0
 
     def _get_axis_length(self, axis):
         return 2
@@ -44,20 +50,3 @@ class BinaryDecisionMatrix(DecisionMatrix):
             else:
                 axis = "[1, 0]"
             print("Axis " + str(i) + ": " + axis)
-
-    def _run_submatrix(self, axis, submatrix):
-        action_performed = False
-
-        if callable(submatrix):
-            submatrix()
-            action_performed = True
-
-        elif submatrix is not None and axis < self._axis_count:
-            if self._conditions[axis]():
-                subsub = submatrix[1]
-            else:
-                subsub = submatrix[0]
-
-            action_performed = self._run_submatrix(axis+1, subsub)
-
-        return action_performed
