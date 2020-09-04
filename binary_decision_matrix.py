@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from copy import deepcopy
 from decision_matrix import DecisionMatrix
 from loop_index.loop_index import LoopIndex
 
